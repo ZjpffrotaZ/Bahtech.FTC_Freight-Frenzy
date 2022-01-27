@@ -21,8 +21,8 @@ public class pegasus02 extends LinearOpMode {
     DcMotor fl;
     DcMotor fr;
 
-    ServoImplEx deposit;
-    ServoImplEx duck;
+    Servo deposit;
+    Servo duck;
 
     BNO055IMU imu;
 
@@ -33,15 +33,13 @@ public class pegasus02 extends LinearOpMode {
 
     double setmode = 1;
     double setmode2 = 1;
-    double x, y, orientation, right, left, speed,up, down;
+    double x, y, right, left, speed,up, down;
     final BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
 
     @Override
     public void runOpMode() {
 
         //Comandos para o robô reconhecer o hardware.
-
-        imu  = hardwareMap.get(BNO055IMU.class, "imu");
 
         duck = hardwareMap.get(ServoImplEx.class, "duck");
 
@@ -61,11 +59,7 @@ public class pegasus02 extends LinearOpMode {
         *
            FL.setDirection(DcMotor.Direction.REVERSE);
            FR.setDirection(DcMotor.Direction.REVERSE);
-        *
-            Logo abaixo temos o comando para iniciar os parâmetros do imu.
         */
-
-        imu.initialize(parameters);
 
         waitForStart();
                                             //Aqui estamos atribuindo os valores do joystick para as
@@ -120,11 +114,6 @@ public class pegasus02 extends LinearOpMode {
                 deposit.setPosition(0.6);
             }
 
-            Orientation orientation = imu.getAngularOrientation(AxesReference.EXTRINSIC, AxesOrder.XYZ, AngleUnit.DEGREES);
-
-            telemetry.addData("X angle:", orientation.firstAngle);
-            telemetry.addData("Y angle:", orientation.secondAngle);
-            telemetry.addData("Z angle:", orientation.thirdAngle);
             telemetry.addData("Motor FR:", right);
             telemetry.addData("Motor FL:", left);
             telemetry.addData("Intake: ", take);

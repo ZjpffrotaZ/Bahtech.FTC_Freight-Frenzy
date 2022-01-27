@@ -4,12 +4,9 @@ import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.ServoImplEx;
+import com.qualcomm.robotcore.hardware.Servo;
 
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
-import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
-import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
+
 
 @TeleOp(name="Pegasus02", group ="Concept")
 public class pegasus02 extends LinearOpMode {
@@ -24,35 +21,29 @@ public class pegasus02 extends LinearOpMode {
     Servo deposit;
     Servo duck;
 
-    BNO055IMU imu;
 
-    /* Declaração das variaveis que vão receber os valores do joystick do gamepad, X e Y,
-       configurando os parâmetros do imu .
-       Estamos usando o IMU para termos ideia de como vamos usar os seus valores para
-       realizar o algoritimo PID, que será usado no período autônomo.*/
+    /* Declaração das variaveis que vão receber os valores do joystick do gamepad, X e Y.*/
+
+    static final double MAX_POS     =  1.0;     // Maximum rotational position
+    static final double MIN_POS     =  0.0;     // Minimum rotational position
+    double position = (MAX_POS - MIN_POS) / 2;
 
     double setmode = 1;
     double setmode2 = 1;
-    double x, y, right, left, speed,up, down;
-    final BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
+    double x, y, right, left, speed;
 
     @Override
     public void runOpMode() {
 
         //Comandos para o robô reconhecer o hardware.
 
-        duck = hardwareMap.get(ServoImplEx.class, "duck");
+        deposit =hardwareMap.get(Servo.class, "deposit");
+        duck = hardwareMap.get(Servo.class, "duck");
 
         arm  = hardwareMap.get(DcMotor.class, "arm");
         take = hardwareMap.get(DcMotor.class, "take");
         fl   = hardwareMap.get(DcMotor.class, "fl");
         fr   = hardwareMap.get(DcMotor.class, "fr");
-
-        //Aqui estamos definindo os parâmetros que nos interessa.
-
-        parameters.mode = BNO055IMU.SensorMode.IMU;
-        parameters.angleUnit = BNO055IMU.AngleUnit.DEGREES;
-        parameters.loggingEnabled = false;
 
         /* Vou deixar esses comandos comentados, caso o pessoal da mecânica
            queira mudar a frente do robô ;).
@@ -66,11 +57,6 @@ public class pegasus02 extends LinearOpMode {
         while (opModeIsActive()) {          //variaveis "X" e "Y".
             x = gamepad1.left_stick_x;
             y = gamepad1.left_stick_y;
-
-            if (gamepad1.left_stick_button == true) {
-                fl.setPower(0.8);
-                fr.setPower(-0.8);
-            }
 
             right = x + y;      //Aqui estou declarando que o motor da direita vai ser
             left = x - y;        // o resultado do x+y e o da esquerda x-y.
@@ -93,8 +79,7 @@ public class pegasus02 extends LinearOpMode {
             if(gamepad1.y){                 //Quando precionado o sistema liga e se manteém,
                 setmode2++;                  // quando precionado novamente desliga.
                 if (setmode2 % 2 == 0){
-                    while (true) {
-                        duck.setPosition(1.0);}
+                        duck.setPosition(1.0);
                 }else{ duck.setPosition(0);}
             }
 
@@ -109,9 +94,13 @@ public class pegasus02 extends LinearOpMode {
             //ACIONA O DEPOSITO
             if (gamepad1.dpad_left){
                 deposit.setPosition(-0.6);
+                sleep(30);
+                deposit.setPosition(0);
             }
             if (gamepad1.dpad_right){
                 deposit.setPosition(0.6);
+                sleep(30);
+                deposit.setPosition(0);
             }
 
             telemetry.addData("Motor FR:", right);
